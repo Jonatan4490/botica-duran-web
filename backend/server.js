@@ -23,10 +23,13 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: function (origin, callback) {
-        // Permitir solicitudes sin "origin" (postman, mobile) o los que estén en allowedOrigins
-        if (!origin || allowedOrigins.includes(origin)) {
+        // Permitir solicitudes locales o de Vercel (especialmente el proyecto actual)
+        if (!origin || 
+            allowedOrigins.includes(origin) || 
+            origin.includes('vercel.app')) {
             callback(null, true);
         } else {
+            console.error('CORS Bloqueado para:', origin);
             callback(new Error('Bloqueado por CORS: origen no permitido.'));
         }
     },

@@ -1,0 +1,328 @@
+/* ============================================
+   PAGES.CSS - ESTILOS GLOBALES DE PÁGINAS
+   BOTICA DURAN ENTERPRISE PRO
+   ============================================ */
+
+/* === PAGE HEADER === */
+.page-header {
+    margin-bottom: var(--spacing-xl);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) 0;
+}
+
+.page-title {
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: var(--gray-900);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.02em;
+}
+
+.page-title svg {
+    color: var(--primary);
+}
+
+.page-subtitle {
+    font-size: 0.875rem;
+    color: var(--gray-400);
+    margin: 4px 0 0;
+}
+
+.page-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+/* === SUMMARY ITEMS === */
+.summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: var(--gray-50);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-100);
+    transition: var(--transition-fast);
+}
+
+.summary-item:hover {
+    background: var(--gray-100);
+    border-color: var(--gray-200);
+}
+
+.summary-label {
+    font-weight: 500;
+    color: var(--gray-600);
+    font-size: 0.875rem;
+}
+
+.summary-value {
+    font-weight: 700;
+    color: var(--gray-900);
+    font-size: 1rem;
+}
+
+/* === ESTADO COLORS === */
+.text-success {
+    color: var(--success) !important;
+}
+
+.text-warning {
+    color: var(--amber) !important;
+}
+
+.text-danger {
+    color: var(--rose) !important;
+}
+
+.text-primary {
+    color: var(--primary) !important;
+}
+
+.text-muted {
+    color: var(--gray-400) !important;
+}
+
+/* === FILTER BAR === */
+.filter-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+    margin-bottom: var(--spacing-lg);
+    padding: 1rem 1.25rem;
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--gray-100);
+    box-shadow: var(--shadow-xs);
+}
+
+.filter-bar .search-box {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* === PRODUCT / ITEM CARDS === */
+.product-card {
+    background: var(--white);
+    border: 1px solid var(--gray-100);
+    border-radius: var(--radius-xl);
+    padding: 1.25rem;
+    transition: var(--transition);
+    cursor: default;
+}
+
+.product-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--gray-200);
+    transform: translateY(-2px);
+}
+
+/* === DATATABLE TOOLBAR === */
+.table-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.table-info {
+    font-size: 0.875rem;
+    color: var(--gray-500);
+}
+
+/* === ANIMACIONES ADICIONALES === */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    70% {
+        transform: scale(1.02);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.slide-in-up {
+    animation: slideInUp 0.4s ease-out;
+}
+
+.bounce-in {
+    animation: bounceIn 0.4s ease-out;
+}
+
+/* Número de items en tabla */
+.table-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8125rem;
+    color: var(--gray-500);
+    font-weight: 500;
+}
+
+.table-count strong {
+    color: var(--gray-800);
+    font-weight: 700;
+}
+
+/* === ACCIONES EN TABLA === */
+.table-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* === ETIQUETA DE STOCK === */
+.stock-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.stock-ok {
+    color: var(--success);
+}
+
+.stock-low {
+    color: var(--amber);
+}
+
+.stock-empty {
+    color: var(--rose);
+}
+
+/* === PRECIO BADGE === */
+.price-tag {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 700;
+    color: var(--gray-900);
+    font-size: 0.9rem;
+}
+
+/* === TICKET NÚMERO === */
+.ticket-number {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 0.875rem;
+    background: var(--info-bg);
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.02em;
+}
+
+/* === PROFIT INDICATOR === */
+.profit-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: var(--radius-full);
+}
+
+.profit-badge.positive {
+    background: var(--success-bg);
+    color: var(--emerald-dark);
+}
+
+.profit-badge.negative {
+    background: var(--error-bg);
+    color: var(--rose-dark);
+}
+
+/* === VENTA DETALLE === */
+.venta-detalle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.625rem 0.875rem;
+    border-radius: var(--radius-md);
+    border-bottom: 1px solid var(--gray-50);
+    font-size: 0.875rem;
+}
+
+.venta-detalle-row:last-child {
+    border-bottom: none;
+}
+
+/* === IMPRESIÓN === */
+@media print {
+
+    .sidebar,
+    .no-print,
+    .btn,
+    button,
+    .page-header .page-actions {
+        display: none !important;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+    }
+
+    .card {
+        box-shadow: none !important;
+        break-inside: avoid;
+        border: 1px solid #ddd;
+    }
+
+    .table thead {
+        background: #f1f1f1 !important;
+        color: #000 !important;
+    }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 1.35rem;
+    }
+
+    .filter-bar {
+        padding: 0.875rem;
+    }
+
+    .table-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

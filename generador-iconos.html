@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Íconos - Botica Duran</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #2563eb;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .preview-container {
+            display: flex;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .preview-box {
+            text-align: center;
+        }
+
+        .preview {
+            width: 192px;
+            height: 192px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9fafb;
+        }
+
+        canvas {
+            border-radius: 8px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .info {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info p {
+            color: #1e40af;
+            margin: 5px 0;
+        }
+
+        .label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .success {
+            background: #d1fae5;
+            border-left-color: #10b981;
+            color: #065f46;
+            display: none;
+            margin-top: 20px;
+        }
+
+        .icon-svg {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🏥 Generador de Íconos</h1>
+        <p class="subtitle">Botica Duran - PWA Icons</p>
+
+        <div class="info">
+            <p>✅ Esta página genera automáticamente los íconos necesarios para tu PWA</p>
+            <p>✅ Descarga los 3 archivos y guárdalos en <code>frontend/public/</code></p>
+        </div>
+
+        <div class="preview-container">
+            <div class="preview-box">
+                <div class="preview">
+                    <canvas id="canvas512" width="512" height="512"></canvas>
+                </div>
+                <p class="label">512x512px</p>
+                <button onclick="downloadIcon(512)">⬇️ Descargar logo512.png</button>
+            </div>
+
+            <div class="preview-box">
+                <div class="preview">
+                    <canvas id="canvas192" width="192" height="192"></canvas>
+                </div>
+                <p class="label">192x192px</p>
+                <button onclick="downloadIcon(192)">⬇️ Descargar logo192.png</button>
+            </div>
+        </div>
+
+        <button onclick="downloadFavicon()">⬇️ Descargar favicon.ico (64x64)</button>
+
+        <div class="success info" id="successMsg">
+            <p>✅ Archivo descargado correctamente!</p>
+        </div>
+
+        <div class="info" style="margin-top: 30px;">
+            <p><strong>📝 Instrucciones:</strong></p>
+            <p>1. Descarga los 3 archivos (logo512.png, logo192.png, favicon.ico)</p>
+            <p>2. Guárdalos en la carpeta <code>frontend/public/</code></p>
+            <p>3. Reinicia el servidor del frontend</p>
+            <p>4. ¡Tu PWA ahora tiene íconos profesionales! 🎉</p>
+        </div>
+    </div>
+
+    <!-- SVG del logo (oculto) -->
+    <svg id="logoSVG" class="icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+        <defs>
+            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+            </linearGradient>
+        </defs>
+        <rect width="512" height="512" rx="80" fill="url(#grad)" />
+        <g transform="translate(256, 256)">
+            <rect x="-40" y="-140" width="80" height="280" fill="white" rx="10" />
+            <rect x="-140" y="-40" width="280" height="80" fill="white" rx="10" />
+        </g>
+        <ellipse cx="150" cy="150" rx="25" ry="35" fill="white" opacity="0.3" transform="rotate(-45 150 150)" />
+        <ellipse cx="362" cy="362" rx="25" ry="35" fill="white" opacity="0.3" transform="rotate(-45 362 362)" />
+    </svg>
+
+    <script>
+        // Generar íconos al cargar la página
+        window.onload = function () {
+            generateIcon(512);
+            generateIcon(192);
+        };
+
+        function generateIcon(size) {
+            const canvas = document.getElementById('canvas' + size);
+            const ctx = canvas.getContext('2d');
+
+            // Limpiar canvas
+            ctx.clearRect(0, 0, size, size);
+
+            // Crear gradiente
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#2563eb');
+            gradient.addColorStop(1, '#3b82f6');
+
+            // Fondo con gradiente y bordes redondeados
+            const radius = size * 0.15625; // 80/512
+            ctx.fillStyle = gradient;
+            roundRect(ctx, 0, 0, size, size, radius);
+
+            // Cruz médica
+            ctx.fillStyle = 'white';
+            const crossWidth = size * 0.15625; // 80/512
+            const crossLength = size * 0.546875; // 280/512
+            const center = size / 2;
+
+            // Vertical
+            roundRect(ctx, center - crossWidth / 2, center - crossLength / 2, crossWidth, crossLength, size * 0.01953125);
+
+            // Horizontal
+            roundRect(ctx, center - crossLength / 2, center - crossWidth / 2, crossLength, crossWidth, size * 0.01953125);
+
+            // Píldoras decorativas
+            ctx.globalAlpha = 0.3;
+            const pillSize = size * 0.0488; // 25/512
+
+            ctx.save();
+            ctx.translate(size * 0.293, size * 0.293);
+            ctx.rotate(-45 * Math.PI / 180);
+            ctx.beginPath();
+            ctx.ellipse(0, 0, pillSize, pillSize * 1.4, 0, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.restore();
+
+            ctx.save();
+            ctx.translate(size * 0.707, size * 0.707);
+            ctx.rotate(-45 * Math.PI / 180);
+            ctx.beginPath();
+            ctx.ellipse(0, 0, pillSize, pillSize * 1.4, 0, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.restore();
+
+            ctx.globalAlpha = 1;
+        }
+
+        function roundRect(ctx, x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function downloadIcon(size) {
+            const canvas = document.getElementById('canvas' + size);
+            const link = document.createElement('a');
+            link.download = 'logo' + size + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            showSuccess();
+        }
+
+        function downloadFavicon() {
+            // Crear canvas pequeño para favicon
+            const canvas = document.createElement('canvas');
+            canvas.width = 64;
+            canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+
+            // Generar ícono de 64x64
+            const gradient = ctx.createLinearGradient(0, 0, 64, 64);
+            gradient.addColorStop(0, '#2563eb');
+            gradient.addColorStop(1, '#3b82f6');
+
+            ctx.fillStyle = gradient;
+            roundRect(ctx, 0, 0, 64, 64, 10);
+
+            ctx.fillStyle = 'white';
+            const crossWidth = 10;
+            const crossLength = 35;
+            const center = 32;
+
+            roundRect(ctx, center - crossWidth / 2, center - crossLength / 2, crossWidth, crossLength, 2);
+            roundRect(ctx, center - crossLength / 2, center - crossWidth / 2, crossLength, crossWidth, 2);
+
+            // Descargar
+            const link = document.createElement('a');
+            link.download = 'favicon.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            showSuccess();
+        }
+
+        function showSuccess() {
+            const msg = document.getElementById('successMsg');
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>

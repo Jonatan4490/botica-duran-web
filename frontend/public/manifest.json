@@ -1,0 +1,17 @@
+{
+    "name": "Botica Duran",
+    "short_name": "Botica Duran",
+    "description": "Sistema de Gestión de Farmacia",
+    "theme_color": "#2563eb",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "scope": "/",
+    "start_url": "/",
+    "icons": [
+        {
+            "src": "/favicon.ico",
+            "sizes": "64x64 32x32 24x24 16x16",
+            "type": "image/x-icon"
+        }
+    ]
+}

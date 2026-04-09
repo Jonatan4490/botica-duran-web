@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -32,13 +32,28 @@ const PrivateRoute = ({ children }) => {
 function App() {
     const { isAuthenticated } = useAuth();
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme(prev => prev === 'light' ? 'dark' : 'light');
+    };
 
     return (
         <Router>
             <div className={`app ${mobileOpen ? 'sidebar-open' : ''}`}>
                 {isAuthenticated && (
                     <>
-                        <Sidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
+                        <Sidebar 
+                            mobileOpen={mobileOpen} 
+                            setMobileOpen={setMobileOpen} 
+                            theme={theme}
+                            toggleTheme={toggleTheme}
+                        />
                         <button 
                             className="mobile-toggle-btn" 
                             onClick={() => setMobileOpen(true)}

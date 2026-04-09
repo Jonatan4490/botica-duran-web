@@ -14,13 +14,15 @@ import {
     FiX,
     FiSettings,
     FiActivity,
-    FiBell
+    FiBell,
+    FiSun,
+    FiMoon
 } from 'react-icons/fi';
 import { useState, useEffect } from 'react';
 import api from '../../utils/api';
 import './Sidebar.css';
 
-const Sidebar = ({ mobileOpen, setMobileOpen }) => {
+const Sidebar = ({ mobileOpen, setMobileOpen, theme, toggleTheme }) => {
     const { user, logout } = useAuth();
     const [collapsed, setCollapsed] = useState(false);
     const location = useLocation();
@@ -202,16 +204,25 @@ const Sidebar = ({ mobileOpen, setMobileOpen }) => {
                 </nav>
 
                 {/* Footer */}
-                <div className="sidebar-footer">
-                    <button
-                        className="logout-btn"
-                        onClick={logout}
-                        title={collapsed ? 'Cerrar Sesión' : ''}
-                    >
-                        <FiLogOut />
-                        {(!collapsed || mobileOpen) && <span>Cerrar Sesión</span>}
-                    </button>
-                </div>
+            <div className="sidebar-footer">
+                <button
+                    className="theme-toggle-btn"
+                    onClick={toggleTheme}
+                    title={collapsed ? (theme === 'light' ? 'Modo Oscuro' : 'Modo Claro') : ''}
+                >
+                    {theme === 'light' ? <FiMoon /> : <FiSun />}
+                    {(!collapsed || mobileOpen) && <span>{theme === 'light' ? 'Modo Oscuro' : 'Modo Claro'}</span>}
+                </button>
+                <div style={{ marginBottom: '0.5rem' }} />
+                <button
+                    className="logout-btn"
+                    onClick={logout}
+                    title={collapsed ? 'Cerrar Sesión' : ''}
+                >
+                    <FiLogOut />
+                    {(!collapsed || mobileOpen) && <span>Cerrar Sesión</span>}
+                </button>
+            </div>
             </aside>
         </>
     );

@@ -364,21 +364,69 @@
 }
 
 /* ============== MOBILE ============== */
+.sidebar-close-mobile {
+    display: none;
+}
+
+.mobile-toggle-btn {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 998;
+    background: var(--primary);
+    color: white;
+    border: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    cursor: pointer;
+}
+
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
-        width: 260px !important;
+        width: 280px !important;
+        box-shadow: none;
     }
 
     .sidebar.mobile-open {
         transform: translateX(0);
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.25);
     }
 
     .sidebar-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(15, 23, 42, 0.6);
         z-index: 999;
-        backdrop-filter: blur(2px);
+        backdrop-filter: blur(3px);
+    }
+
+    .sidebar-close-mobile {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.08);
+        border: none;
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        font-size: 1.25rem;
+        cursor: pointer;
+    }
+
+    /* Ocultar botón colapsar en móvil y usar X */
+    .sidebar-toggle {
+        display: none;
+    }
+
+    .mobile-toggle-btn {
+        display: flex;
     }
 }

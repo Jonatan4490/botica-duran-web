@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from './context/AuthContext';
+import { FiMenu } from 'react-icons/fi';
 import './pages/Pages.css';
 
 // Layouts
@@ -29,11 +31,22 @@ const PrivateRoute = ({ children }) => {
 
 function App() {
     const { isAuthenticated } = useAuth();
+    const [mobileOpen, setMobileOpen] = useState(false);
 
     return (
         <Router>
-            <div className="app">
-                {isAuthenticated && <Sidebar />}
+            <div className={`app ${mobileOpen ? 'sidebar-open' : ''}`}>
+                {isAuthenticated && (
+                    <>
+                        <Sidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
+                        <button 
+                            className="mobile-toggle-btn" 
+                            onClick={() => setMobileOpen(true)}
+                        >
+                            <FiMenu />
+                        </button>
+                    </>
+                )}
                 <div className={`main-content ${!isAuthenticated ? 'sidebar-collapsed' : ''}`}>
                     <Routes>
                         <Route path="/login" element={

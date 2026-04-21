@@ -62,7 +62,7 @@ router.post('/', [
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const { producto_id, nombre, unidades_equivalentes, precio_venta, orden } = req.body;
+        const { id, producto_id, nombre, unidades_equivalentes, precio_venta, orden } = req.body;
 
         // Obtener el precio por unidad del producto
         const [producto] = await db.query('SELECT precio_venta FROM productos WHERE id = ?', [producto_id]);
@@ -79,24 +79,31 @@ router.post('/', [
             ? (((precioSinDescuento - precio_venta) / precioSinDescuento) * 100).toFixed(2)
             : 0;
 
-        // Verificar si ya existe
-        const [existe] = await db.query(
-            'SELECT id FROM presentaciones_producto WHERE producto_id = ? AND nombre = ?',
-            [producto_id, nombre]
-        );
+        // Verificar si existe (por ID o por Nombre en el mismo producto)
+        let existeId = id;
+        
+        if (!existeId) {
+            const [existe] = await db.query(
+                'SELECT id FROM presentaciones_producto WHERE producto_id = ? AND nombre = ? AND activo = TRUE',
+                [producto_id, nombre]
+            );
+            if (existe.length > 0) {
+                existeId = existe[0].id;
+            }
+        }
 
-        if (existe.length > 0) {
+        if (existeId) {
             // Actualizar existente
             await db.query(
                 `UPDATE presentaciones_producto 
-                 SET unidades_equivalentes = ?, precio_venta = ?, porcentaje_descuento = ?, orden = ?
+                 SET nombre = ?, unidades_equivalentes = ?, precio_venta = ?, porcentaje_descuento = ?, orden = ?, activo = TRUE
                  WHERE id = ?`,
-                [unidades_equivalentes, precio_venta, porcentajeDescuento, orden || 0, existe[0].id]
+                [nombre, unidades_equivalentes, precio_venta, porcentajeDescuento, orden || 0, existeId]
             );
 
             res.json({
                 message: 'Presentación actualizada exitosamente',
-                id: existe[0].id
+                id: existeId
             });
         } else {
             // Crear nueva

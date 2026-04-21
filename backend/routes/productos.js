@@ -15,9 +15,7 @@ router.get('/', async (req, res) => {
         const { search, categoria, bajo_stock, activo } = req.query;
 
         let query = `
-            SELECT p.*, c.nombre as categoria_nombre,
-                   (SELECT precio_venta FROM precios_producto WHERE producto_id = p.id AND tipo_venta = 'Blister' LIMIT 1) as precio_blister,
-                   (SELECT precio_venta FROM precios_producto WHERE producto_id = p.id AND tipo_venta = 'Caja' LIMIT 1) as precio_caja
+            SELECT p.*, c.nombre as categoria_nombre
             FROM productos p
             LEFT JOIN categorias c ON p.categoria_id = c.id
             WHERE 1=1
@@ -111,13 +109,9 @@ router.post('/', [
             unidad_medida,
             precio_compra,
             precio_venta,
-            precio_blister,
-            precio_caja,
             stock_actual,
             stock_minimo,
             requiere_receta,
-            unidades_por_blister,
-            blisters_por_caja,
             codigo_barras,
             laboratorio,
             ubicacion
@@ -133,12 +127,11 @@ router.post('/', [
         const [result] = await db.query(
             `INSERT INTO productos 
             (nombre, descripcion, categoria_id, unidad_medida, precio_compra, precio_venta, 
-             stock_actual, stock_minimo, requiere_receta, unidades_por_blister, blisters_por_caja,
+             stock_actual, stock_minimo, requiere_receta,
              codigo_barras, codigo_interno, laboratorio, ubicacion)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [nombre, descripcion, categoria_id, unidad_medida || 'Unidad', precio_compra, precio_venta,
                 stock_actual || 0, stock_minimo || 5, requiere_receta || false,
-                unidades_por_blister || 10, blisters_por_caja || 10,
                 codigo_barras, codigoInterno, laboratorio, ubicacion]
         );
 
@@ -151,37 +144,8 @@ router.post('/', [
             );
         }
 
-        // Crear precios para las diferentes presentaciones
-        const precioUnidad = precio_venta;
-        const unidadesBlister = unidades_por_blister || 10;
-        const blistersCaja = blisters_por_caja || 10;
-
-        // Usar precios ingresados o calcular automáticamente con descuentos por defecto
-        const precioBlisterFinal = precio_blister || (precio_venta * unidadesBlister * 0.90).toFixed(2);
-        const precioCajaFinal = precio_caja || (precio_venta * unidadesBlister * blistersCaja * 0.80).toFixed(2);
-
-        // Calcular porcentajes de descuento reales basados en los precios
-        const porcentajeBlister = precio_blister
-            ? (((precioUnidad * unidadesBlister - precioBlisterFinal) / (precioUnidad * unidadesBlister)) * 100).toFixed(2)
-            : 10.00;
-
-        const porcentajeCaja = precio_caja
-            ? (((precioUnidad * unidadesBlister * blistersCaja - precioCajaFinal) / (precioUnidad * unidadesBlister * blistersCaja)) * 100).toFixed(2)
-            : 20.00;
-
-        // Insertar precios multinivel
-        await db.query(
-            `INSERT INTO precios_producto (producto_id, tipo_venta, cantidad_minima, cantidad_equivalente, precio_venta, porcentaje_descuento)
-             VALUES 
-             (?, 'Unidad', 1, 1, ?, 0),
-             (?, 'Blister', ?, ?, ?, ?),
-             (?, 'Caja', ?, ?, ?, ?)`,
-            [
-                result.insertId, precioUnidad,
-                result.insertId, unidadesBlister, unidadesBlister, precioBlisterFinal, porcentajeBlister,
-                result.insertId, unidadesBlister * blistersCaja, unidadesBlister * blistersCaja, precioCajaFinal, porcentajeCaja
-            ]
-        );
+        // Ya no insertamos en precios_producto aquí, 
+        // ahora se usa el sistema de presentaciones_producto gestionado por el frontend
 
         res.status(201).json({
             message: 'Producto creado exitosamente',
@@ -208,6 +172,9 @@ router.put('/:id', async (req, res) => {
             precio_venta,
             stock_minimo,
             requiere_receta,
+            codigo_barras,
+            laboratorio,
+            ubicacion,
             activo
         } = req.body;
 
@@ -215,10 +182,12 @@ router.put('/:id', async (req, res) => {
             `UPDATE productos 
             SET nombre = ?, descripcion = ?, categoria_id = ?, unidad_medida = ?,
                 precio_compra = ?, precio_venta = ?, stock_minimo = ?, 
-                requiere_receta = ?, activo = ?
+                requiere_receta = ?, codigo_barras = ?, laboratorio = ?, 
+                ubicacion = ?, activo = ?
             WHERE id = ?`,
             [nombre, descripcion, categoria_id, unidad_medida, precio_compra, precio_venta,
-                stock_minimo, requiere_receta, activo !== undefined ? activo : true, req.params.id]
+                stock_minimo, requiere_receta, codigo_barras, laboratorio, 
+                ubicacion, activo !== undefined ? activo : true, req.params.id]
         );
 
         if (result.affectedRows === 0) {

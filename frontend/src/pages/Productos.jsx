@@ -150,7 +150,23 @@ const Productos = () => {
         setPresentaciones(newPresentaciones);
     };
 
-    const removePresentacion = (index) => {
+    const removePresentacion = async (index) => {
+        const presentation = presentaciones[index];
+        
+        if (presentation.id) {
+            if (window.confirm('¿Desea eliminar esta presentación de forma permanente?')) {
+                try {
+                    await api.delete(`/presentaciones/${presentation.id}`);
+                    toast.success('Presentación eliminada');
+                } catch (error) {
+                    toast.error('Error al eliminar presentación del servidor');
+                    return;
+                }
+            } else {
+                return;
+            }
+        }
+        
         const newPresentaciones = presentaciones.filter((_, i) => i !== index);
         setPresentaciones(newPresentaciones);
     };
@@ -182,29 +198,40 @@ const Productos = () => {
             let productoId;
             let response;
 
+            const productData = {
+                ...formData,
+                // Asegurar tipos de datos correctos
+                precio_compra: parseFloat(formData.precio_compra),
+                precio_venta: parseFloat(formData.precio_venta),
+                stock_actual: parseInt(formData.stock_actual) || 0,
+                stock_minimo: parseInt(formData.stock_minimo) || 0,
+            };
+
             if (editingProduct) {
-                response = await api.put(`/productos/${editingProduct.id}`, formData);
+                response = await api.put(`/productos/${editingProduct.id}`, productData);
                 productoId = editingProduct.id;
                 toast.success('Producto actualizado');
             } else {
-                response = await api.post('/productos', formData);
+                response = await api.post('/productos', productData);
                 productoId = response.data.id;
                 toast.success('Producto creado');
             }
 
             // 2. Guardar presentaciones dinámicas
-            // Primero eliminar las anteriores (simplificación)
-            // En una implementación más robusta actualizaríamos por ID
+            // En una implementación ideal, enviaríamos todo en una sola petición o manejaríamos las eliminaciones
             if (presentaciones.length > 0) {
-                const promesas = presentaciones.filter(p => p.nombre && p.unidades && p.precio).map(p => {
-                    return api.post('/presentaciones', {
-                        producto_id: productoId,
-                        nombre: p.nombre,
-                        unidades_equivalentes: p.unidades,
-                        precio_venta: p.precio,
-                        orden: 0 // El backend manejará el orden si es necesario
+                const promesas = presentaciones
+                    .filter(p => p.nombre && p.unidades && p.precio)
+                    .map(p => {
+                        return api.post('/presentaciones', {
+                            id: p.id, // Si tiene ID, el backend debería saber que es actualización
+                            producto_id: productoId,
+                            nombre: p.nombre,
+                            unidades_equivalentes: p.unidades,
+                            precio_venta: p.precio,
+                            orden: 0
+                        });
                     });
-                });
 
                 await Promise.all(promesas);
             }
@@ -212,7 +239,20 @@ const Productos = () => {
             handleCloseModal();
             fetchData();
         } catch (error) {
+            console.error('Error saving product:', error);
             toast.error(error.response?.data?.error || 'Error al guardar producto');
+        }
+    };
+
+    const handleDeleteProduct = async (id) => {
+        if (window.confirm('¿Está seguro de desactivar este producto?')) {
+            try {
+                await api.delete(`/productos/${id}`);
+                toast.success('Producto desactivado');
+                fetchData();
+            } catch (error) {
+                toast.error('Error al eliminar producto');
+            }
         }
     };
 
@@ -311,7 +351,14 @@ const Productos = () => {
                                     onClick={() => handleOpenStockModal(producto)}
                                     title="Realizar ajuste manual de inventario"
                                 >
-                                    <FiSliders /> Ajustar Stock
+                                    <FiSliders /> Stock
+                                </button>
+                                <button
+                                    className="btn btn-sm btn-outline-danger"
+                                    onClick={() => handleDeleteProduct(producto.id)}
+                                    title="Desactivar producto"
+                                >
+                                    <FiTrash2 /> Borrar
                                 </button>
                             </div>
                         </div>

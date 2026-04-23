@@ -13,11 +13,16 @@ router.get('/', async (req, res) => {
     try {
         const { activo } = req.query;
 
-        let query = 'SELECT * FROM categorias WHERE 1=1';
+        let query = `
+            SELECT c.*, 
+                   (SELECT COUNT(*) FROM productos p WHERE p.categoria_id = c.id AND p.activo = TRUE) as total_productos
+            FROM categorias c 
+            WHERE 1=1
+        `;
         const params = [];
 
         if (activo !== undefined) {
-            query += ' AND activo = ?';
+            query += ' AND c.activo = ?';
             params.push(activo === 'true');
         }
 

@@ -164,19 +164,19 @@ router.post('/', [
 router.put('/:id', async (req, res) => {
     try {
         const {
-            nombre,
-            descripcion,
-            categoria_id,
-            unidad_medida,
-            precio_compra,
-            precio_venta,
-            stock_minimo,
-            requiere_receta,
-            codigo_barras,
-            laboratorio,
-            ubicacion,
-            activo
+            nombre, descripcion, categoria_id, unidad_medida, precio_compra,
+            precio_venta, stock_minimo, requiere_receta, codigo_barras,
+            laboratorio, ubicacion, activo
         } = req.body;
+
+        // Obtener datos actuales para permitir actualización parcial
+        const [actual] = await db.query('SELECT * FROM productos WHERE id = ?', [req.params.id]);
+        
+        if (actual.length === 0) {
+            return res.status(404).json({ error: 'Producto no encontrado' });
+        }
+
+        const p = actual[0];
 
         const [result] = await db.query(
             `UPDATE productos 
@@ -185,9 +185,21 @@ router.put('/:id', async (req, res) => {
                 requiere_receta = ?, codigo_barras = ?, laboratorio = ?, 
                 ubicacion = ?, activo = ?
             WHERE id = ?`,
-            [nombre, descripcion, categoria_id, unidad_medida, precio_compra, precio_venta,
-                stock_minimo, requiere_receta, codigo_barras, laboratorio, 
-                ubicacion, activo !== undefined ? activo : true, req.params.id]
+            [
+                nombre !== undefined ? nombre : p.nombre,
+                descripcion !== undefined ? descripcion : p.descripcion,
+                categoria_id !== undefined ? categoria_id : p.categoria_id,
+                unidad_medida !== undefined ? unidad_medida : p.unidad_medida,
+                precio_compra !== undefined ? precio_compra : p.precio_compra,
+                precio_venta !== undefined ? precio_venta : p.precio_venta,
+                stock_minimo !== undefined ? stock_minimo : p.stock_minimo,
+                requiere_receta !== undefined ? requiere_receta : p.requiere_receta,
+                codigo_barras !== undefined ? codigo_barras : p.codigo_barras,
+                laboratorio !== undefined ? laboratorio : p.laboratorio,
+                ubicacion !== undefined ? ubicacion : p.ubicacion,
+                activo !== undefined ? activo : p.activo,
+                req.params.id
+            ]
         );
 
         if (result.affectedRows === 0) {

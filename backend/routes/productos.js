@@ -23,8 +23,10 @@ router.get('/', async (req, res) => {
         const params = [];
 
         if (search) {
-            query += ' AND p.nombre LIKE ?';
-            params.push(`%${search}%`);
+            // Usamos COLLATE utf8mb4_unicode_ci para ignorar acentos en la búsqueda
+            query += ' AND (p.nombre COLLATE utf8mb4_unicode_ci LIKE ? OR p.codigo_interno LIKE ? OR p.codigo_barras LIKE ?)';
+            const term = `%${search}%`;
+            params.push(term, term, term);
         }
 
         if (categoria) {

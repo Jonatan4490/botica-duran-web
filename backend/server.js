@@ -83,7 +83,7 @@ app.get('/api/buscar', require('./middleware/auth').verifyToken, async (req, res
         const term = `%${q}%`;
         const [productos] = await db.query(
             `SELECT id, nombre, stock_actual, precio_venta, codigo_interno FROM productos
-             WHERE activo = TRUE AND (nombre LIKE ? OR codigo_barras LIKE ? OR codigo_interno LIKE ?)
+             WHERE activo = TRUE AND (nombre COLLATE utf8mb4_unicode_ci LIKE ? OR codigo_barras LIKE ? OR codigo_interno LIKE ?)
              LIMIT 8`,
             [term, term, term]
         );

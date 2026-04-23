@@ -121,8 +121,10 @@ const NuevaVenta = () => {
         }
     };
 
-    const actualizarCantidad = (index, cantidad) => {
-        if (cantidad < 0) return; // Evitar negativos
+    const actualizarCantidad = (index, valor) => {
+        const cantidad = valor === '' ? 0 : parseInt(valor);
+        
+        if (isNaN(cantidad) || cantidad < 0) return;
 
         const newCarrito = [...carrito];
         const item = newCarrito[index];
@@ -132,17 +134,15 @@ const NuevaVenta = () => {
         const unidadesPorPresentacion = item.presentacion_seleccionada.unidades_equivalentes || 1;
         const unidadesTotales = cantidad * unidadesPorPresentacion;
 
-        if (cantidad === 0) {
-            // Eliminar si es 0
-            newCarrito.splice(index, 1);
-        } else if (unidadesTotales <= item.stock_disponible) {
+        // Ya no eliminamos el item si la cantidad es 0, para permitir que el usuario escriba
+        // La eliminación se hace explícitamente con el icono de basurero
+        if (unidadesTotales <= item.stock_disponible) {
             item.cantidad = cantidad;
             item.cantidadUnidades = unidadesTotales;
+            setCarrito(newCarrito);
         } else {
             toast.warning(`Stock insuficiente. Intentas vender ${unidadesTotales} unidades, pero solo hay ${item.stock_disponible}.`);
-            return;
         }
-        setCarrito(newCarrito);
     };
 
     const cambiarPresentacion = (index, presentacionNombre) => {
@@ -285,17 +285,18 @@ const NuevaVenta = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (carrito.length === 0) {
-            toast.warning('Agrega productos al carrito');
+        const itemsValidos = carrito.filter(item => item.cantidad > 0);
+
+        if (itemsValidos.length === 0) {
+            toast.warning('Agrega productos con cantidad válida (mayor a 0) al carrito');
+            setLoading(false);
             return;
         }
-
-        setLoading(true);
 
         try {
             const ventaData = {
                 ...formData,
-                items: carrito.map(item => ({
+                items: itemsValidos.map(item => ({
                     producto_id: item.producto_id,
                     cantidad: item.cantidadUnidades,
                     cantidad_presentacion: item.cantidad,
@@ -450,8 +451,8 @@ const NuevaVenta = () => {
                                                     type="number"
                                                     min="1"
                                                     className="form-control form-control-sm"
-                                                    value={item.cantidad || 0}
-                                                    onChange={(e) => actualizarCantidad(index, parseInt(e.target.value) || 0)}
+                                                    value={item.cantidad || ''}
+                                                    onChange={(e) => actualizarCantidad(index, e.target.value)}
                                                 />
                                             </div>
 

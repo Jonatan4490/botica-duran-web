@@ -75,9 +75,20 @@ router.put('/:id', async (req, res) => {
     try {
         const { nombre, descripcion, activo } = req.body;
 
+        // Obtener datos actuales para permitir actualización parcial (evita el error 500 al desactivar)
+        const [actual] = await db.query('SELECT * FROM categorias WHERE id = ?', [req.params.id]);
+        
+        if (actual.length === 0) {
+            return res.status(404).json({ error: 'Categoría no encontrada' });
+        }
+
+        const nuevoNombre = nombre !== undefined ? nombre : actual[0].nombre;
+        const nuevaDesc = descripcion !== undefined ? descripcion : actual[0].descripcion;
+        const nuevoActivo = activo !== undefined ? activo : actual[0].activo;
+
         const [result] = await db.query(
             'UPDATE categorias SET nombre = ?, descripcion = ?, activo = ? WHERE id = ?',
-            [nombre, descripcion, activo !== undefined ? activo : true, req.params.id]
+            [nuevoNombre, nuevaDesc, nuevoActivo, req.params.id]
         );
 
         if (result.affectedRows === 0) {
